@@ -14,4 +14,5 @@ public interface IDonorService {
     void saveMedicalProfile(DonorMedicalProfile profile);
     boolean isDonorEligibleForDonation(int donorId);
     void recordDonation(int donorId, Date donationDate, String location);
+    void deleteDonor(int donorId) throws Exception;
 }

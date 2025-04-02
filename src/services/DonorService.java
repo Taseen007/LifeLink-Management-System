@@ -186,4 +186,22 @@ public class DonorService implements IDonorService {
         
         return donor;
     }
+
+    @Override
+    public void deleteDonor(int donorId) throws Exception {
+        String sql = "DELETE FROM donors WHERE donor_id = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, donorId);
+            int rowsAffected = stmt.executeUpdate();
+            
+            if (rowsAffected == 0) {
+                throw new Exception("Donor not found with ID: " + donorId);
+            }
+            Logger.info("Donor deleted with ID: " + donorId);
+        } catch (SQLException e) {
+            Logger.error("Failed to delete donor", e);
+            throw new Exception("Failed to delete donor: " + e.getMessage(), e);
+        }
+    }
 }

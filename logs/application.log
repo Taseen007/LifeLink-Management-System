@@ -326,3 +326,6 @@ java.sql.SQLException: Column 'last_donation_date' not found.
 [2025-04-02 01:04:05] INFO: Donor registered: Taseen
 [2025-04-02 01:05:32] INFO: Donor registered: Tausif
 [2025-04-02 01:30:18] INFO: Donor registered: Ahir
+[2025-04-02 18:23:33] INFO: Donor registered: Mahima
+[2025-04-02 18:26:08] INFO: Updated inventory status: ID 1 to Available
+[2025-04-02 18:26:21] INFO: Added blood inventory: AB+, Units: 1
