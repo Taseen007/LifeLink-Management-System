@@ -159,55 +159,38 @@ class DialogManager {
         }
 
         JDialog dialog = new JDialog(parentFrame, "Record Donation", true);
-        dialog.setLayout(new BorderLayout());
-        dialog.setSize(300, 200);
-        dialog.setLocationRelativeTo(parentFrame);
+        DonationHistoryFormPanel formPanel = new DonationHistoryFormPanel();
+        formPanel.setDonorId(donorId);
+        formPanel.setBloodType(bloodType);
+        
+        JPanel buttonPanel = createButtonPanel(
+            formPanel,
+            "Save",
+            () -> {
+                try {
+                    DonationHistory history = formPanel.createDonationHistory();
+                    ((BloodBankUI) parentFrame).getDonationHistoryPanelManager().addDonationHistory(history);
 
-        JPanel formPanel = new JPanel(new GridLayout(3, 2, 5, 5));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JTextField locationField = new JTextField();
-        JSpinner unitsSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
-
-        formPanel.add(new JLabel("Location:"));
-        formPanel.add(locationField);
-        formPanel.add(new JLabel("Units:"));
-        formPanel.add(unitsSpinner);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton saveButton = new JButton("Save");
-        JButton cancelButton = new JButton("Cancel");
-
-        saveButton.addActionListener(e -> {
-            try {
-                donorService.recordDonation(donorId, new Date(), locationField.getText());
-
-                // Update inventory
-                BloodInventory inventory = new BloodInventory(
+                    // Update inventory
+                    BloodInventory inventory = new BloodInventory(
                         bloodType,
-                        (Integer) unitsSpinner.getValue(),
+                        history.getUnits(),
                         "Available"
-                );
-                inventoryService.addInventory(inventory);
+                    );
+                    inventoryService.addInventory(inventory);
+                    DialogUtils.showSuccess(parentFrame, "Donation recorded successfully");
+                } catch (Exception ex) {
+                    DialogUtils.showError(parentFrame, "Error", "Error recording donation: " + ex.getMessage());
+                }
+            },
+            dialog
+        );
 
-                // Update UI
-                ((BloodBankUI) parentFrame).loadData();
-                dialog.dispose();
-
-                // Show success message
-                DialogUtils.showSuccess(parentFrame, "Donation recorded successfully");
-            } catch (Exception ex) {
-                DialogUtils.showError(parentFrame, "Error", "Error recording donation: " + ex.getMessage());
-            }
-        });
-
-        cancelButton.addActionListener(e -> dialog.dispose());
-
-        buttonPanel.add(saveButton);
-        buttonPanel.add(cancelButton);
-
+        dialog.setLayout(new BorderLayout());
         dialog.add(formPanel, BorderLayout.CENTER);
         dialog.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.pack();
+        dialog.setLocationRelativeTo(parentFrame);
         dialog.setVisible(true);
     }
 
@@ -421,40 +404,42 @@ class DialogManager {
     }
 
     // Add these new methods at the end of the class
-    public void showDonationDetailsDialog(int donorId) {
-        DonationHistory history = donationHistoryService.getDonationHistoryById(donorId);
-        if (history == null) {
-            DialogUtils.showError(parentFrame, "Error", "No donation history found");
-            return;
+    public void showDonationDetailsDialog(int historyId) {
+        try {
+            DonationHistory history = donationHistoryService.getDonationHistoryById(historyId);
+            if (history != null) {
+                JDialog dialog = new JDialog(parentFrame, "Donation Details", true);
+                DonationHistoryFormPanel formPanel = new DonationHistoryFormPanel(history);
+                
+                JPanel buttonPanel = createButtonPanel(
+                    formPanel,
+                    "Update",
+                    () -> {
+                        try {
+                            DonationHistory updatedHistory = formPanel.getUpdatedHistory(history);
+                            ((BloodBankUI) parentFrame).getDonationHistoryPanelManager().updateDonationHistory(updatedHistory);
+                            DialogUtils.showSuccess(parentFrame, "Donation history updated successfully");
+                        } catch (Exception ex) {
+                            DialogUtils.showError(parentFrame, "Error", "Failed to update donation history: " + ex.getMessage());
+                        }
+                    },
+                    dialog
+                );
+
+                dialog.setLayout(new BorderLayout());
+                dialog.add(formPanel, BorderLayout.CENTER);
+                dialog.add(buttonPanel, BorderLayout.SOUTH);
+                dialog.pack();
+                dialog.setLocationRelativeTo(parentFrame);
+                dialog.setVisible(true);
+            }
+        } catch (Exception e) {
+            DialogUtils.showError(parentFrame, "Error", "Failed to load donation details: " + e.getMessage());
         }
-
-        JDialog dialog = new JDialog(parentFrame, "Donation Details", true);
-        dialog.setLayout(new BorderLayout());
-        dialog.setSize(400, 300);
-        dialog.setLocationRelativeTo(parentFrame);
-
-        JTextArea detailsArea = new JTextArea();
-        detailsArea.setEditable(false);
-        detailsArea.setText(String.format(
-            "Donation ID: %d\n" +
-            "Donor ID: %d\n" +
-            "Blood Type: %s\n" +
-            "Units: %d\n" +
-            "Location: %s\n" +
-            "Donation Date: %s",
-            history.getDonationId(),
-            history.getDonorId(),
-            history.getBloodType(),
-            history.getUnits(),
-            history.getLocation(),
-            history.getDonationDate()
-        ));
-
-        dialog.add(new JScrollPane(detailsArea), BorderLayout.CENTER);
-        dialog.add(createCloseButton(dialog), BorderLayout.SOUTH);
-        dialog.setVisible(true);
     }
 
+    // Remove this unused method
+    /*
     private String formatDonationRecords(List<String> records) {
         StringBuilder sb = new StringBuilder();
         for (String record : records) {
@@ -462,6 +447,7 @@ class DialogManager {
         }
         return sb.toString();
     }
+    */
 
     public void showExportHistoryDialog() {
         JFileChooser fileChooser = new JFileChooser();
@@ -493,13 +479,5 @@ class DialogManager {
                 );
             }
         }
-    }
-
-    private JPanel createCloseButton(JDialog dialog) {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton closeButton = new JButton("Close");
-        closeButton.addActionListener(e -> dialog.dispose());
-        buttonPanel.add(closeButton);
-        return buttonPanel;
     }
 }

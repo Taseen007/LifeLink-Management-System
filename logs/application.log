@@ -452,3 +452,14 @@ java.sql.SQLSyntaxErrorException: Table 'lifelink_db.blood_inventory' doesn't ex
 [2025-04-03 12:00:55] INFO: Updated blood inventory: O+, Units: 5
 [2025-04-03 12:04:26] INFO: Donor registered: Ahir
 [2025-04-03 12:04:41] INFO: Donor deleted with ID: 2
+[2025-04-03 12:50:43] INFO: Donation recorded for donor ID: 3
+[2025-04-03 12:50:43] INFO: Updated blood inventory: AB-, Units: 1
+[2025-04-03 13:08:06] INFO: Donor deleted with ID: 3
+[2025-04-03 13:09:45] INFO: Donor registered: Ahir
+[2025-04-03 13:09:51] INFO: Donor deleted with ID: 4
+[2025-04-03 13:22:05] INFO: Donor registered: Ahir
+[2025-04-03 13:22:19] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 13:22:24] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 13:22:33] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 13:22:38] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 13:22:55] INFO: Updated inventory status: ID 2 to Not Available

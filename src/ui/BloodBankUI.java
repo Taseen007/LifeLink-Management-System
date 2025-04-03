@@ -45,12 +45,24 @@ public class BloodBankUI extends JFrame {
     // Add these fields with other UI Component Managers
     private DonationHistoryPanelManager donationHistoryPanelManager;
    
+    public DonationHistoryPanelManager getDonationHistoryPanelManager() {
+        return donationHistoryPanelManager;
+    }
+   
 
     public BloodBankUI() {
-        super("Blood Bank Management System");
+        setTitle("Blood Bank Management System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
+
+        // Add this window listener
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                cleanup();
+            }
+        });
 
         // Initialize managers
         donorPanelManager = new DonorPanelManager(this);
@@ -184,16 +196,7 @@ public class BloodBankUI extends JFrame {
         dialogManager.showEditDonorDialog(donorId);
     }
 
-    public void deleteDonor() {
-        if (donorPanelManager.isDonorSelected()) {
-            DialogUtils.showSelectionWarning(this, "donor");
-            return;
-        }
 
-        int donorId = donorPanelManager.getSelectedDonorId();
-        String donorName = donorPanelManager.getSelectedDonorName();
-        dialogManager.showDeleteDonorConfirmation(donorId, donorName);
-    }
 
     public void showRecordDonationDialog() {
         if (donorPanelManager.isDonorSelected()) {
@@ -246,8 +249,20 @@ public class BloodBankUI extends JFrame {
         }
 
         String requestId = requestPanelManager.getSelectedRequestId();
-        String currentStatus = requestPanelManager.getSelectedRequestStatus();
-        dialogManager.showUpdateRequestStatusDialog(requestId, currentStatus);
+        String[] statusOptions = {"Pending", "Approved", "Fulfilled", "Cancelled"};
+        String newStatus = (String) JOptionPane.showInputDialog(
+            this,
+            "Select new status:",
+            "Update Status",
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            statusOptions,
+            requestPanelManager.getSelectedRequestStatus()
+        );
+
+        if (newStatus != null) {
+            requestPanelManager.updateRequestStatus(Integer.parseInt(requestId), newStatus);
+        }
     }
 
     public void deleteRequest() {
@@ -296,5 +311,35 @@ public class BloodBankUI extends JFrame {
     // Add this method before the last closing brace
     public void showAddDonorDialog() {
         dialogManager.showAddDonorDialog();
+    }
+    // Add this method with other public methods
+    public void deleteDonor() {
+        if (!donorPanelManager.isDonorSelected()) {  // Fixed the condition
+            DialogUtils.showSelectionWarning(this, "donor");
+            return;
+        }
+
+        int donorId = donorPanelManager.getSelectedDonorId();
+        String donorName = donorPanelManager.getSelectedDonorName();
+        dialogManager.showDeleteDonorConfirmation(donorId, donorName);  // Use the DialogManager method
+    }
+
+    public void deleteDonationHistory() {
+        if (!donationHistoryPanelManager.isHistorySelected()) {
+            DialogUtils.showSelectionWarning(this, "donation history");
+            return;
+        }
+
+        int historyId = donationHistoryPanelManager.getSelectedHistoryId();
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to delete this donation history?",
+            "Confirm Delete",
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            donationHistoryPanelManager.deleteDonationHistory(historyId);
+        }
     }
 }

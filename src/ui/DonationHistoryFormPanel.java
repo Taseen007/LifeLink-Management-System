@@ -47,4 +47,29 @@ public class DonationHistoryFormPanel extends JPanel {
     public void setBloodType(String bloodType) {
         bloodTypeField.setText(bloodType);
     }
+
+    // Add constructor for editing existing donation history
+    public DonationHistoryFormPanel(DonationHistory history) {
+        this();  // Call default constructor to set up the panel
+        donorIdField.setText(String.valueOf(history.getDonorId()));
+        bloodTypeField.setText(history.getBloodType());
+        locationField.setText(history.getLocation());
+        unitsSpinner.setValue(history.getUnits());
+        
+        // Make donor ID field read-only in edit mode
+        donorIdField.setEditable(false);
+    }
+
+    // Add method to update existing donation history
+    public DonationHistory getUpdatedHistory(DonationHistory original) {
+        DonationHistory history = new DonationHistory(
+            Integer.parseInt(donorIdField.getText().trim()),
+            bloodTypeField.getText().trim(),
+            locationField.getText().trim()
+        );
+        history.setDonationId(original.getDonationId());
+        history.setDonationDate(original.getDonationDate());
+        history.setUnits((Integer) unitsSpinner.getValue());
+        return history;
+    }
 }

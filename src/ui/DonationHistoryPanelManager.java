@@ -52,22 +52,30 @@ public class DonationHistoryPanelManager {
     public JPanel createHistoryPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         
-        // Create toolbar with buttons
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
+        // Create table with the existing model
+        historyTable = new JTable(tableModel);
+        historyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(historyTable);
         
-        JButton viewDetailsButton = new JButton("View Details");
-        JButton exportButton = new JButton("Export History");
+        // Create button panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton updateButton = new JButton("Update");
+        JButton deleteButton = new JButton("Delete");
+        JButton exportButton = new JButton("Export");
         
-        viewDetailsButton.addActionListener(e -> ((BloodBankUI)parentFrame).showDonationDetailsDialog());
+        // Add action listeners with proper casting
+        updateButton.addActionListener(e -> ((BloodBankUI)parentFrame).showDonationDetailsDialog());
+        deleteButton.addActionListener(e -> ((BloodBankUI)parentFrame).deleteDonationHistory());
         exportButton.addActionListener(e -> ((BloodBankUI)parentFrame).exportDonationHistory());
         
-        toolbar.add(viewDetailsButton);
-        toolbar.add(exportButton);
+        // Add buttons to panel
+        buttonPanel.add(updateButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(exportButton);
         
-        // Add components to panel
-        panel.add(toolbar, BorderLayout.NORTH);
-        panel.add(new JScrollPane(historyTable), BorderLayout.CENTER);
+        // Add components to main panel
+        panel.add(buttonPanel, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
         
         return panel;
     }
@@ -90,7 +98,7 @@ public class DonationHistoryPanelManager {
         return historyTable;
     }
 
-    // Add after your existing methods
+    // Keep these methods as they are the responsibility of this class
         public void addDonationHistory(DonationHistory history) {
             try {
                 donationHistoryService.addDonationHistory(history);

@@ -160,7 +160,11 @@ public class DonorPanelManager {
         
         addButton.addActionListener(e -> ((BloodBankUI) parentFrame).showAddDonorDialog());
         editButton.addActionListener(e -> ((BloodBankUI) parentFrame).showEditDonorDialog());
-        deleteButton.addActionListener(e -> ((BloodBankUI) parentFrame).deleteDonor());
+        deleteButton.addActionListener(e -> {
+            if (!isDonorSelected()) {
+                deleteDonor(getSelectedDonorId());
+            }
+        });
         recordDonationButton.addActionListener(e -> ((BloodBankUI) parentFrame).showRecordDonationDialog());
         
         buttonsPanel.add(addButton);

@@ -77,7 +77,7 @@ public class BloodRequestFormPanel extends JPanel {  // Make class public
 
     public BloodRequest createRequest() {
         validateFields();
-        BloodRequest request = new BloodRequest(
+        return new BloodRequest(
             patientNameField.getText().trim(),
             (String) bloodTypeCombo.getSelectedItem(),
             (Integer) unitsSpinner.getValue(),
@@ -85,7 +85,6 @@ public class BloodRequestFormPanel extends JPanel {  // Make class public
             hospitalField.getText().trim(),
             (Date) requiredDateSpinner.getValue()
         );
-        return request;
     }
 
     public void updateRequest(BloodRequest request) {

@@ -50,7 +50,10 @@ class InventoryPanelManager {
     }
 
     public boolean isInventorySelected() {
-        return inventoryTable != null && inventoryTable.getSelectedRow() >= 0;
+        if (inventoryTable == null) {
+            return false;
+        }
+        return inventoryTable.getSelectedRow() >= 0;
     }
 
     public int getSelectedInventoryId() {
@@ -69,6 +72,8 @@ class InventoryPanelManager {
         return (String) inventoryTable.getValueAt(selectedRow, 3);
     }
 
+    // Remove these unused methods:
+    /*
     public JTable getTable() {
         return inventoryTable;
     }
@@ -76,6 +81,7 @@ class InventoryPanelManager {
     public DefaultTableModel getTableModel() {
         return inventoryTableModel;
     }
+    */
 
     public JPanel createInventoryPanel() {
         JPanel panel = new JPanel(new BorderLayout());
