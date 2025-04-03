@@ -24,24 +24,20 @@ public class DatabaseConnection implements IConnectionProvider, AutoCloseable {
         this.props = new Properties();
         
         try {
-            // Try to load from config file
             props.load(new FileInputStream("config/database.properties"));
         } catch (IOException e) {
             System.out.println("Using default database configuration");
-            // Use default values if config file is not found
             props.setProperty("db.url", "jdbc:mysql://localhost:3306/lifelink_db");
             props.setProperty("db.user", "root");
             props.setProperty("db.password", "Taswar923");
         }
 
-        // Initialize database driver
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("MySQL JDBC Driver not found", e);
         }
 
-        // Schedule connection validation every 5 minutes
         scheduler.scheduleAtFixedRate(this::validateConnections, 5, 5, TimeUnit.MINUTES);
     }
 
@@ -53,19 +49,29 @@ public class DatabaseConnection implements IConnectionProvider, AutoCloseable {
             return conn;
         }
 
-        if (conn != null) {
-            closeConnectionQuietly(conn);
-            currentConnections--;
-        }
-
-        if (currentConnections >= MAX_POOL_SIZE) {
-            throw new SQLException("Connection pool limit reached");
-        }
-
+        // Create new connection if needed
         conn = createNewConnection();
         currentConnections++;
         return conn;
     }
+
+    // Remove the duplicate closeConnection method and keep the original one below:
+    /* Remove this duplicate method
+    @Override
+    public void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                if (!connection.getAutoCommit()) {
+                    connection.rollback();
+                }
+                connection.setAutoCommit(true);
+                connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing connection: " + e.getMessage());
+            }
+        }
+    }
+    */
 
     private boolean isConnectionValid(Connection conn) {
         try {
@@ -95,11 +101,30 @@ public class DatabaseConnection implements IConnectionProvider, AutoCloseable {
                     connectionPool.offer(connection);
                 } else {
                     closeConnectionQuietly(connection);
-                    currentConnections--;
+                    synchronized (this) {
+                        currentConnections--;
+                    }
                 }
             } catch (SQLException e) {
                 closeConnectionQuietly(connection);
-                currentConnections--;
+                synchronized (this) {
+                    currentConnections--;
+                }
+            }
+        }
+    }
+
+    private void validateConnections() {
+        int initialSize = connectionPool.size();
+        for (int i = 0; i < initialSize; i++) {
+            Connection conn = connectionPool.poll();
+            if (conn != null && isConnectionValid(conn)) {
+                connectionPool.offer(conn);
+            } else if (conn != null) {
+                closeConnectionQuietly(conn);
+                synchronized (this) {
+                    currentConnections--;
+                }
             }
         }
     }
@@ -114,32 +139,25 @@ public class DatabaseConnection implements IConnectionProvider, AutoCloseable {
         }
     }
 
-    private void validateConnections() {
-        int initialSize = connectionPool.size();
-        for (int i = 0; i < initialSize; i++) {
-            Connection conn = connectionPool.poll();
-            if (conn != null && isConnectionValid(conn)) {
-                connectionPool.offer(conn);
-            } else if (conn != null) {
-                closeConnectionQuietly(conn);
-                currentConnections--;
-            }
-        }
-    }
-
     @Override
     public void shutdown() {
         scheduler.shutdown();
         try {
-            scheduler.awaitTermination(5, TimeUnit.SECONDS);
+            boolean terminated = scheduler.awaitTermination(5, TimeUnit.SECONDS);
+            if (!terminated) {
+                scheduler.shutdownNow();
+            }
         } catch (InterruptedException e) {
+            scheduler.shutdownNow();
             Thread.currentThread().interrupt();
         }
 
         while (!connectionPool.isEmpty()) {
             Connection conn = connectionPool.poll();
             closeConnectionQuietly(conn);
-            currentConnections--;
+            synchronized (this) {
+                currentConnections--;
+            }
         }
     }
 

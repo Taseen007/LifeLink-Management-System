@@ -2,6 +2,8 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/database/schema.sql" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/services/BloodRequestService.java" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/src/services/DonationHistoryService.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/services/DonorService.java" dialect="GenericSQL" />
   </component>
 </project>

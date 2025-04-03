@@ -1,6 +1,5 @@
 -- Drop existing tables in correct order
 DROP TABLE IF EXISTS donation_history;
-DROP TABLE IF EXISTS donor_medical_profiles;
 DROP TABLE IF EXISTS blood_inventory;
 DROP TABLE IF EXISTS donors;
 
@@ -34,20 +33,6 @@ CREATE TABLE blood_inventory (
     CONSTRAINT chk_units CHECK (units >= 0)
 );
 
--- Create donor_medical_profiles table
-CREATE TABLE donor_medical_profiles (
-    profile_id INT PRIMARY KEY AUTO_INCREMENT,
-    donor_id INT NOT NULL,
-    blood_type VARCHAR(5) NOT NULL,
-    weight DOUBLE NOT NULL,
-    medical_history TEXT,
-    is_eligible BOOLEAN DEFAULT true,
-    last_checkup_date DATE,
-    CONSTRAINT fk_donor_profile FOREIGN KEY (donor_id) 
-        REFERENCES donors(donor_id) ON DELETE CASCADE,
-    CONSTRAINT chk_weight CHECK (weight > 0)
-);
-
 -- Create donation_history table
 CREATE TABLE donation_history (
     donation_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -78,3 +63,24 @@ VALUES
 ('AB-', 0, 'Available', 'Main Storage', CURRENT_TIMESTAMP),
 ('O+', 0, 'Available', 'Main Storage', CURRENT_TIMESTAMP),
 ('O-', 0, 'Available', 'Main Storage', CURRENT_TIMESTAMP);
+
+-- Create blood_requests table
+CREATE TABLE blood_requests (
+    request_id INT PRIMARY KEY AUTO_INCREMENT,
+    patient_name VARCHAR(100) NOT NULL,
+    blood_type VARCHAR(5) NOT NULL,
+    units_needed INT NOT NULL,
+    urgency VARCHAR(20) NOT NULL,
+    hospital VARCHAR(100) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending',
+    request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    required_date TIMESTAMP NOT NULL,
+    CONSTRAINT chk_blood_type_req CHECK (blood_type IN ('A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-')),
+    CONSTRAINT chk_urgency CHECK (urgency IN ('Emergency', 'High', 'Medium', 'Low')),
+    CONSTRAINT chk_request_status CHECK (status IN ('Pending', 'Approved', 'Fulfilled', 'Rejected'))
+);
+
+-- Add index for better performance
+CREATE INDEX idx_request_status ON blood_requests(status);
+CREATE INDEX idx_request_urgency ON blood_requests(urgency);
+CREATE INDEX idx_request_blood_type ON blood_requests(blood_type);

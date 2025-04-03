@@ -9,7 +9,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.List;  // Add this import
 
-class DonorPanelManager {
+public class DonorPanelManager {
     private final JFrame parentFrame;
     private JTable donorTable;
     private DefaultTableModel donorTableModel;
@@ -26,14 +26,12 @@ class DonorPanelManager {
         this.donorService = donorService;
     }
 
-    // Add a method to check if service is initialized
     private void checkServiceInitialization() {
         if (donorService == null) {
             throw new IllegalStateException("DonorService has not been initialized");
         }
     }
 
-    // Update methods that use donorService to check initialization
     public void updateDonorTable(List<Donor> donors) {
         checkServiceInitialization();
         donorTableModel.setRowCount(0);
@@ -52,6 +50,7 @@ class DonorPanelManager {
                     donor.getAge(),
                     donor.getBloodType(),
                     donor.getLocation(),
+                    donor.getRegistrationDate() != null ? sdf.format(donor.getRegistrationDate()) : "N/A",
                     lastDonation,
                     donor.isEligible() ? "Eligible" : "Not Eligible"
             });
@@ -97,7 +96,6 @@ class DonorPanelManager {
     public JPanel createDonorPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        // Initialize table with proper settings
         donorTableModel = createDonorTableModel();
         donorTable = new JTable(donorTableModel);
         donorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -107,7 +105,6 @@ class DonorPanelManager {
         JScrollPane scrollPane = new JScrollPane(donorTable);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add buttons panel
         JPanel buttonsPanel = createDonorButtonsPanel();
         panel.add(buttonsPanel, BorderLayout.SOUTH);
 
@@ -120,16 +117,9 @@ class DonorPanelManager {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-            
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 0) return Integer.class; // ID column
-                if (columnIndex == 5) return Integer.class; // Age column
-                return String.class;
-            }
         };
 
-        model.addColumn("ID");
+        model.addColumn("Donor ID");
         model.addColumn("Name");
         model.addColumn("Contact");
         model.addColumn("Email");
@@ -137,31 +127,47 @@ class DonorPanelManager {
         model.addColumn("Age");
         model.addColumn("Blood Type");
         model.addColumn("Location");
+        model.addColumn("Registration Date");
         model.addColumn("Last Donation");
-        model.addColumn("Status");
+        model.addColumn("Eligible");
 
         return model;
     }
 
+    public void refreshDonorTable() {
+        List<Donor> donors = donorService.getAllDonors();
+        updateDonorTable(donors);
+    }
+
+    public void deleteDonor(int donorId) {
+        try {
+            donorService.deleteDonor(donorId);
+            refreshDonorTable();
+            DialogUtils.showSuccess(parentFrame, "Donor deleted successfully");
+        } catch (Exception e) {
+            DialogUtils.showError(parentFrame, "Error", "Failed to delete donor: " + e.getMessage());
+        }
+    }
+
+    // Add this method after createDonorTableModel()
     private JPanel createDonorButtonsPanel() {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        JButton addDonorBtn = new JButton("Add Donor");
-        JButton editDonorBtn = new JButton("Edit Donor");
-        JButton deleteDonorBtn = new JButton("Delete Donor");
-        JButton recordDonationBtn = new JButton("Record Donation");
-
-        addDonorBtn.addActionListener(e -> ((BloodBankUI)parentFrame).showAddDonorDialog());
-        editDonorBtn.addActionListener(e -> ((BloodBankUI)parentFrame).showEditDonorDialog());
-        deleteDonorBtn.addActionListener(e -> ((BloodBankUI)parentFrame).deleteDonor());
-        recordDonationBtn.addActionListener(e -> ((BloodBankUI)parentFrame).showRecordDonationDialog());
-
-        buttonsPanel.add(addDonorBtn);
-        buttonsPanel.add(editDonorBtn);
-        buttonsPanel.add(deleteDonorBtn);
-        buttonsPanel.add(recordDonationBtn);
-
+        
+        JButton addButton = new JButton("Add Donor");
+        JButton editButton = new JButton("Edit Donor");
+        JButton deleteButton = new JButton("Delete Donor");
+        JButton recordDonationButton = new JButton("Record Donation");
+        
+        addButton.addActionListener(e -> ((BloodBankUI) parentFrame).showAddDonorDialog());
+        editButton.addActionListener(e -> ((BloodBankUI) parentFrame).showEditDonorDialog());
+        deleteButton.addActionListener(e -> ((BloodBankUI) parentFrame).deleteDonor());
+        recordDonationButton.addActionListener(e -> ((BloodBankUI) parentFrame).showRecordDonationDialog());
+        
+        buttonsPanel.add(addButton);
+        buttonsPanel.add(editButton);
+        buttonsPanel.add(deleteButton);
+        buttonsPanel.add(recordDonationButton);
+        
         return buttonsPanel;
     }
 }

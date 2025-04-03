@@ -15,4 +15,6 @@ public interface IDonorService {
     boolean isDonorEligibleForDonation(int donorId);
     void recordDonation(int donorId, Date donationDate, String location);
     void deleteDonor(int donorId) throws Exception;
+
+    void createDonor(Donor donor);
 }

@@ -28,25 +28,62 @@ public class InventoryService implements IInventoryService {
             throw new IllegalArgumentException("Inventory cannot be null");
         }
 
-        String query = "INSERT INTO blood_inventory (blood_type, units, status, last_updated) VALUES (?, ?, ?, ?)";
+        // First check if blood type exists
+        String checkQuery = "SELECT inventory_id, units FROM blood_inventory WHERE blood_type = ? AND status = 'Available'";
+        String updateQuery = "UPDATE blood_inventory SET units = units + ?, last_updated = ? WHERE blood_type = ? AND status = 'Available'";
+        String insertQuery = "INSERT INTO blood_inventory (blood_type, units, status, last_updated) VALUES (?, ?, ?, ?)";
+        
+        PreparedStatement checkStmt = null;
+        PreparedStatement updateStmt = null;
+        PreparedStatement insertStmt = null;
+        ResultSet rs = null;
         
         try {
-            PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, inventory.getBloodType());
-            stmt.setInt(2, inventory.getUnits());
-            stmt.setString(3, inventory.getStatus());
-            stmt.setTimestamp(4, new Timestamp(inventory.getLastUpdated().getTime()));
+            checkStmt = connection.prepareStatement(checkQuery);
+            checkStmt.setString(1, inventory.getBloodType());
+            rs = checkStmt.executeQuery();
             
-            stmt.executeUpdate();
-            
-            ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                inventory.setInventoryId(rs.getInt(1));
+                // Update existing inventory
+                updateStmt = connection.prepareStatement(updateQuery);
+                updateStmt.setInt(1, inventory.getUnits());
+                updateStmt.setTimestamp(2, new Timestamp(new Date().getTime()));
+                updateStmt.setString(3, inventory.getBloodType());
+                updateStmt.executeUpdate();
+                inventory.setInventoryId(rs.getInt("inventory_id"));
+            } else {
+                // Insert new inventory
+                insertStmt = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+                insertStmt.setString(1, inventory.getBloodType());
+                insertStmt.setInt(2, inventory.getUnits());
+                insertStmt.setString(3, "Available");
+                insertStmt.setTimestamp(4, new Timestamp(new Date().getTime()));
+                insertStmt.executeUpdate();
+                
+                ResultSet generatedKeys = insertStmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    inventory.setInventoryId(generatedKeys.getInt(1));
+                }
             }
-            Logger.info("Added blood inventory: " + inventory.getBloodType() + ", Units: " + inventory.getUnits());
+            Logger.info("Updated blood inventory: " + inventory.getBloodType() + ", Units: " + inventory.getUnits());
         } catch (SQLException e) {
             Logger.error("Error adding blood inventory", e);
             throw new RuntimeException("Error adding blood inventory: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, checkStmt, updateStmt, insertStmt);
+        }
+    }
+
+    // Add this method to properly close resources
+    private void closeResources(AutoCloseable... resources) {
+        for (AutoCloseable resource : resources) {
+            if (resource != null) {
+                try {
+                    resource.close();
+                } catch (Exception e) {
+                    Logger.error("Error closing resource", e);
+                }
+            }
         }
     }
 
@@ -76,9 +113,11 @@ public class InventoryService implements IInventoryService {
         List<BloodInventory> inventory = new ArrayList<>();
         String query = "SELECT * FROM blood_inventory ORDER BY blood_type, last_updated DESC";
         
+        Statement stmt = null;
+        ResultSet rs = null;
         try {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(query);
             
             while (rs.next()) {
                 inventory.add(extractInventoryFromResultSet(rs));
@@ -87,6 +126,8 @@ public class InventoryService implements IInventoryService {
         } catch (SQLException e) {
             Logger.error("Error retrieving blood inventory", e);
             throw new RuntimeException("Error retrieving blood inventory: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, stmt);
         }
     }
 
@@ -94,11 +135,13 @@ public class InventoryService implements IInventoryService {
     public BloodInventory getInventoryById(int inventoryId) {
         String query = "SELECT * FROM blood_inventory WHERE inventory_id = ?";
         
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
-            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt = connection.prepareStatement(query);
             stmt.setInt(1, inventoryId);
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 return extractInventoryFromResultSet(rs);
             }
@@ -106,6 +149,8 @@ public class InventoryService implements IInventoryService {
         } catch (SQLException e) {
             Logger.error("Error retrieving inventory by ID", e);
             throw new RuntimeException("Error retrieving inventory by ID: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, stmt);
         }
     }
 
@@ -114,11 +159,13 @@ public class InventoryService implements IInventoryService {
         List<BloodInventory> inventory = new ArrayList<>();
         String query = "SELECT * FROM blood_inventory WHERE blood_type = ? ORDER BY last_updated DESC";
         
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
-            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt = connection.prepareStatement(query);
             stmt.setString(1, bloodType.toUpperCase());
             
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 inventory.add(extractInventoryFromResultSet(rs));
             }
@@ -126,6 +173,8 @@ public class InventoryService implements IInventoryService {
         } catch (SQLException e) {
             Logger.error("Error retrieving inventory by blood type", e);
             throw new RuntimeException("Error retrieving inventory by blood type: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, stmt);
         }
     }
 
@@ -135,9 +184,11 @@ public class InventoryService implements IInventoryService {
         String query = "SELECT blood_type, SUM(units) as total_units FROM blood_inventory " +
                       "WHERE status = 'Available' GROUP BY blood_type";
         
+        Statement stmt = null;
+        ResultSet rs = null;
         try {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(query);
             
             while (rs.next()) {
                 bloodTypeUnits.put(rs.getString("blood_type"), rs.getInt("total_units"));
@@ -146,6 +197,8 @@ public class InventoryService implements IInventoryService {
         } catch (SQLException e) {
             Logger.error("Error retrieving blood type units", e);
             throw new RuntimeException("Error retrieving blood type units: " + e.getMessage(), e);
+        } finally {
+            closeResources(rs, stmt);
         }
     }
 
@@ -153,8 +206,9 @@ public class InventoryService implements IInventoryService {
     public void removeInventory(int inventoryId) {
         String query = "DELETE FROM blood_inventory WHERE inventory_id = ?";
         
+        PreparedStatement stmt = null;
         try {
-            PreparedStatement stmt = connection.prepareStatement(query);
+            stmt = connection.prepareStatement(query);
             stmt.setInt(1, inventoryId);
             
             int rowsAffected = stmt.executeUpdate();
@@ -165,6 +219,8 @@ public class InventoryService implements IInventoryService {
         } catch (SQLException e) {
             Logger.error("Error removing inventory", e);
             throw new RuntimeException("Error removing inventory: " + e.getMessage(), e);
+        } finally {
+            closeResources(stmt);
         }
     }
 

@@ -5,11 +5,10 @@ import models.Donor;
 import javax.swing.*;
 import java.awt.*;
 
-class DonorFormPanel extends JPanel {
+public class DonorFormPanel extends JPanel {
     private static final String[] GENDER_OPTIONS = {"Male", "Female", "Other"};
     private static final String[] BLOOD_TYPES = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
     
-    // Add field declarations
     private JTextField nameField;
     private JTextField contactField;
     private JTextField emailField;
@@ -21,12 +20,12 @@ class DonorFormPanel extends JPanel {
     private void initializeComponents(Donor donor) {
         nameField = new JTextField();
         contactField = new JTextField();
-        emailField = new JTextField(20);  // Set preferred size
-        genderCombo = new JComboBox<>(GENDER_OPTIONS);  // Used here
-        genderCombo.setPrototypeDisplayValue("Select Gender"); // Better dropdown width
+        emailField = new JTextField(20);
+        genderCombo = new JComboBox<>(GENDER_OPTIONS);
+        genderCombo.setPrototypeDisplayValue("Select Gender");
         ageSpinner = new JSpinner(new SpinnerNumberModel(18, 18, 65, 1));
-        bloodTypeCombo = new JComboBox<>(BLOOD_TYPES);  // Used here
-        bloodTypeCombo.setPrototypeDisplayValue("Select Blood Type"); // Better dropdown width
+        bloodTypeCombo = new JComboBox<>(BLOOD_TYPES);
+        bloodTypeCombo.setPrototypeDisplayValue("Select Blood Type");
         locationField = new JTextField();
 
         if (donor != null) {
@@ -96,8 +95,7 @@ class DonorFormPanel extends JPanel {
         initializeComponents(donor);
     }
 
-    // Add default constructor as well
     public DonorFormPanel() {
-        this(null);  // Call the main constructor with null donor
+        this(null);
     }
 }

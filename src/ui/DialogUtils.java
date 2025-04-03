@@ -24,6 +24,13 @@ class DialogUtils {
                 JOptionPane.WARNING_MESSAGE);
     }
 
+    public static void showInfo(JFrame parent, String title, String message) {
+        JOptionPane.showMessageDialog(parent,
+                message,
+                title,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
     public static void showSuccess(JFrame parent, String message) {
         JOptionPane.showMessageDialog(parent,
                 message,

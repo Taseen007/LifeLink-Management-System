@@ -331,3 +331,124 @@ java.sql.SQLException: Column 'last_donation_date' not found.
 [2025-04-02 18:26:21] INFO: Added blood inventory: AB+, Units: 1
 [2025-04-02 18:29:54] INFO: Donation recorded for donor ID: 2
 [2025-04-02 18:29:54] INFO: Added blood inventory: B+, Units: 1
+[2025-04-02 22:43:52] ERROR: Error retrieving blood inventory
+java.sql.SQLSyntaxErrorException: Table 'lifelink_db.blood_inventory' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1206)
+	at services.InventoryService.getAllInventory(InventoryService.java:81)
+	at ui.BloodBankUI.loadData(BloodBankUI.java:132)
+	at ui.BloodBankUI.initializeServices(BloodBankUI.java:112)
+	at ui.BloodBankUI.<init>(BloodBankUI.java:37)
+	at Main.lambda$main$0(Main.java:9)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:87)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+[2025-04-02 22:45:33] ERROR: Error retrieving blood inventory
+java.sql.SQLSyntaxErrorException: Table 'lifelink_db.blood_inventory' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1206)
+	at services.InventoryService.getAllInventory(InventoryService.java:81)
+	at ui.BloodBankUI.loadData(BloodBankUI.java:132)
+	at ui.BloodBankUI.initializeServices(BloodBankUI.java:112)
+	at ui.BloodBankUI.<init>(BloodBankUI.java:37)
+	at Main.lambda$main$0(Main.java:9)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:87)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+[2025-04-02 22:53:08] ERROR: Error retrieving blood inventory
+java.sql.SQLSyntaxErrorException: Table 'lifelink_db.blood_inventory' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1206)
+	at services.InventoryService.getAllInventory(InventoryService.java:81)
+	at ui.BloodBankUI.loadData(BloodBankUI.java:132)
+	at ui.BloodBankUI.initializeServices(BloodBankUI.java:112)
+	at ui.BloodBankUI.<init>(BloodBankUI.java:37)
+	at Main.lambda$main$0(Main.java:9)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:87)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+[2025-04-02 22:54:55] ERROR: Error retrieving blood inventory
+java.sql.SQLSyntaxErrorException: Table 'lifelink_db.blood_inventory' doesn't exist
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1206)
+	at services.InventoryService.getAllInventory(InventoryService.java:81)
+	at ui.BloodBankUI.loadData(BloodBankUI.java:132)
+	at ui.BloodBankUI.initializeServices(BloodBankUI.java:112)
+	at ui.BloodBankUI.<init>(BloodBankUI.java:37)
+	at Main.lambda$main$0(Main.java:9)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:773)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:720)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:714)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:87)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:742)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+[2025-04-02 22:59:37] INFO: Donor registered: Taseen
+[2025-04-02 23:02:16] INFO: Donation recorded for donor ID: 1
+[2025-04-02 23:02:16] INFO: Added blood inventory: O+, Units: 1
+[2025-04-03 02:18:12] INFO: Created blood request for: X
+[2025-04-03 02:19:09] INFO: Updated inventory status: ID 5 to Available
+[2025-04-03 02:19:35] INFO: Updated inventory status: ID 9 to Not Available
+[2025-04-03 11:15:20] INFO: Added blood inventory: A+, Units: 1
+[2025-04-03 11:15:33] INFO: Added blood inventory: A+, Units: 1
+[2025-04-03 11:15:41] INFO: Added blood inventory: A+, Units: 1
+[2025-04-03 11:18:05] INFO: Updated inventory status: ID 3 to Available
+[2025-04-03 11:18:11] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 11:20:19] INFO: Removed inventory item: ID 1
+[2025-04-03 11:20:24] INFO: Removed inventory item: ID 12
+[2025-04-03 11:20:29] INFO: Removed inventory item: ID 11
+[2025-04-03 11:20:33] INFO: Removed inventory item: ID 9
+[2025-04-03 11:20:46] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 11:20:58] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 11:21:15] INFO: Updated blood inventory: O+, Units: 1
+[2025-04-03 11:22:50] INFO: Updated blood inventory: A+, Units: 1
+[2025-04-03 11:23:26] INFO: Updated blood inventory: AB-, Units: 1
+[2025-04-03 11:23:37] INFO: Updated blood inventory: AB+, Units: 1
+[2025-04-03 11:24:20] INFO: Donor registered: Tausif
+[2025-04-03 11:24:29] INFO: Donor updated: Tausif
+[2025-04-03 11:24:46] INFO: Donation recorded for donor ID: 2
+[2025-04-03 11:24:46] INFO: Updated blood inventory: B+, Units: 1
+[2025-04-03 12:00:35] INFO: Updated inventory status: ID 7 to Available
+[2025-04-03 12:00:55] INFO: Updated blood inventory: O+, Units: 5
+[2025-04-03 12:04:26] INFO: Donor registered: Ahir
+[2025-04-03 12:04:41] INFO: Donor deleted with ID: 2

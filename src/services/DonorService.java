@@ -28,7 +28,7 @@ public class DonorService implements IDonorService {
             stmt.setInt(5, donor.getAge());
             stmt.setString(6, donor.getBloodType());
             stmt.setString(7, donor.getLocation());
-            
+
             stmt.executeUpdate();
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
@@ -120,8 +120,8 @@ public class DonorService implements IDonorService {
         // First update the donor's last donation date
         String updateDonorSql = "UPDATE donors SET last_donation_date = ? WHERE donor_id = ?";
         String insertDonationSql = "INSERT INTO donation_history (donor_id, donation_date, blood_type, location) " +
-                                 "SELECT ?, ?, blood_type, ? FROM donors WHERE donor_id = ?";
-        
+                "SELECT ?, ?, blood_type, ? FROM donors WHERE donor_id = ?";
+
         try {
             connection.setAutoCommit(false);
             try {
@@ -159,42 +159,42 @@ public class DonorService implements IDonorService {
 
     private Donor extractDonorFromResultSet(ResultSet rs) throws SQLException {
         Donor donor = new Donor(
-            rs.getString("name"),
-            rs.getString("contact"),
-            rs.getString("email"),
-            rs.getString("gender"),
-            rs.getInt("age"),
-            rs.getString("blood_type"),
-            rs.getString("location")
+                rs.getString("name"),
+                rs.getString("contact"),
+                rs.getString("email"),
+                rs.getString("gender"),
+                rs.getInt("age"),
+                rs.getString("blood_type"),
+                rs.getString("location")
         );
         donor.setDonorId(rs.getInt("donor_id"));
-        
+
         // Handle last_donation_date (can be null)
         Timestamp lastDonationDate = rs.getTimestamp("last_donation_date");
         if (lastDonationDate != null) {
             donor.setLastDonationDate(new Date(lastDonationDate.getTime()));
         }
-        
+
         // Set registration date
         Timestamp registrationDate = rs.getTimestamp("registration_date");
         if (registrationDate != null) {
             donor.setRegistrationDate(new Date(registrationDate.getTime()));
         }
-        
+
         // Set eligibility
         donor.setEligible(rs.getBoolean("eligible"));
-        
+
         return donor;
     }
 
     @Override
     public void deleteDonor(int donorId) throws Exception {
         String sql = "DELETE FROM donors WHERE donor_id = ?";
-        
+
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, donorId);
             int rowsAffected = stmt.executeUpdate();
-            
+
             if (rowsAffected == 0) {
                 throw new Exception("Donor not found with ID: " + donorId);
             }
@@ -202,6 +202,18 @@ public class DonorService implements IDonorService {
         } catch (SQLException e) {
             Logger.error("Failed to delete donor", e);
             throw new Exception("Failed to delete donor: " + e.getMessage(), e);
+        }
+    }
+
+    // Add this method after the existing methods
+    @Override
+    public void createDonor(Donor donor) {
+        try {
+            Donor registeredDonor = registerDonor(donor);
+            Logger.info("Donor created successfully: " + registeredDonor.getName());
+        } catch (Exception e) {
+            Logger.error("Error creating donor", e);
+            throw new RuntimeException("Error creating donor: " + e.getMessage(), e);
         }
     }
 }

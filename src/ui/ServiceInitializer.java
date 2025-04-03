@@ -1,22 +1,32 @@
 package ui;
 
+import services.BloodRequestService;
+import services.DonationHistoryService;
 import services.DonorService;
 import services.InventoryService;
+import services.interfaces.IBloodRequestService;
+import services.interfaces.IDonationHistoryService;
 import services.interfaces.IDonorService;
 import services.interfaces.IInventoryService;
 import utils.DatabaseConnection;
 import utils.interfaces.IConnectionProvider;
 
-class ServiceInitializer {
-    public ServiceContainer initializeServices() throws Exception {
-        try {
-            IConnectionProvider dbConnection = new DatabaseConnection();
-            IDonorService donorService = new DonorService(dbConnection);
-            IInventoryService inventoryService = new InventoryService(dbConnection);
+import java.sql.SQLException;
 
-            return new ServiceContainer(dbConnection, donorService, inventoryService);
-        } catch (Exception e) {
-            throw new Exception("Failed to initialize services: " + e.getMessage(), e);
-        }
+class ServiceInitializer {
+    public ServiceContainer initializeServices() throws SQLException {
+        IConnectionProvider dbConnection = new DatabaseConnection();
+        IDonorService donorService = new DonorService(dbConnection);
+        IInventoryService inventoryService = new InventoryService(dbConnection);
+        IBloodRequestService bloodRequestService = new BloodRequestService(dbConnection);
+        IDonationHistoryService donationHistoryService = new DonationHistoryService(dbConnection);  // Fixed variable name
+
+        return new ServiceContainer(
+            dbConnection,
+            donorService,
+            inventoryService,
+            bloodRequestService,
+            donationHistoryService
+        );
     }
 }
